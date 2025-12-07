@@ -1,21 +1,13 @@
 {
   "$schema": "https://mintlify.com/schema.json",
-  "name": "Omium Documentation",
+  "name": "Omium",
   "theme": "prism",
   "version": "1.0.0",
-  "logo": {
-    "dark": "/logo/dark.svg",
-    "light": "/logo/light.svg"
-  },
   "favicon": "/favicon.svg",
   "colors": {
     "primary": "#ff6b35",
     "light": "#ff8c5a",
-    "dark": "#e55a2b",
-    "anchors": {
-      "from": "#ff6b35",
-      "to": "#ff8c5a"
-    }
+    "dark": "#e55a2b"
   },
   "topbarLinks": [
     {
@@ -31,13 +23,6 @@
     "name": "Get Started",
     "url": "https://app.omium.ai"
   },
-  "anchors": [
-    {
-      "name": "Documentation",
-      "icon": "book-open-cover",
-      "url": "https://docs.omium.ai"
-    }
-  ],
   "navigation": [
     {
       "group": "Get Started",
