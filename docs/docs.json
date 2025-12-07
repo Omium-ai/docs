@@ -1,0 +1,85 @@
+{
+  "name": "Omium Documentation",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#ff6b35",
+    "light": "#ff8c5a",
+    "dark": "#e55a2b",
+    "anchors": {
+      "from": "#ff6b35",
+      "to": "#ff8c5a"
+    }
+  },
+  "topbarLinks": [
+    {
+      "name": "Dashboard",
+      "url": "https://app.omium.ai"
+    },
+    {
+      "name": "GitHub",
+      "url": "https://github.com/omium-ai/omium"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Get Started",
+    "url": "https://app.omium.ai"
+  },
+  "anchors": [
+    {
+      "name": "Documentation",
+      "icon": "book-open-cover",
+      "url": "https://docs.omium.ai"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Get Started",
+      "pages": [
+        "intro",
+        "getting-started/installation",
+        "getting-started/quickstart",
+        "getting-started/sdk-initialization"
+      ]
+    },
+    {
+      "group": "Guides",
+      "pages": [
+        "guides/crewai-integration",
+        "guides/langgraph-integration",
+        "guides/workflow-import"
+      ]
+    },
+    {
+      "group": "API Reference",
+      "pages": [
+        "api-reference/workflows",
+        "api-reference/executions",
+        "api-reference/checkpoints",
+        "api-reference/failures",
+        "api-reference/billing"
+      ]
+    },
+    {
+      "group": "SDK & CLI",
+      "pages": [
+        "sdk-cli/python-sdk",
+        "sdk-cli/cli-commands"
+      ]
+    },
+    {
+      "group": "Examples",
+      "pages": [
+        "examples/examples"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "twitter": "https://twitter.com/omium",
+    "github": "https://github.com/omium-ai",
+    "linkedin": "https://www.linkedin.com/company/omium"
+  }
+}

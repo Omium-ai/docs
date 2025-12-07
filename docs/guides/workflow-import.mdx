@@ -1,0 +1,57 @@
+---
+title: Workflow Import
+description: Import your agentic workflows into Omium
+---
+
+## Import Workflows into Omium
+
+After exporting workflows from your preferred framework (e.g., CrewAI, LangGraph), you can import them into Omium for centralized management, execution, and monitoring.
+
+### Steps to Import:
+
+1. **Go to the [Automation page](https://app.omium.ai/automation)** in your Omium dashboard.
+2. **Click the "Import from JSON" button**.
+3. **Upload or paste the exported JSON file** containing your workflow definition.
+4. **Omium will create a new workflow** that you can then edit, manage, and execute.
+
+### Benefits of Importing:
+
+- **Centralized Management**: View and manage all your workflows in one place.
+- **Visual Editor**: Edit workflow configurations and parameters through an intuitive UI.
+- **Reliable Execution**: Leverage Omium's automatic checkpointing and failure handling.
+- **Monitoring & Observability**: Track execution status, view logs, and analyze performance.
+- **Version Control**: Omium helps manage versions of your workflows.
+
+## Example Workflow JSON
+
+A typical imported workflow JSON might look like this (simplified):
+
+```json
+{
+  "name": "My Research Crew",
+  "description": "A CrewAI workflow to research a given topic.",
+  "workflow_type": "crewai",
+  "definition": {
+    "agents": [
+      {
+        "role": "Researcher",
+        "goal": "Find relevant information",
+        "backstory": "An expert in data retrieval"
+      }
+    ],
+    "tasks": [
+      {
+        "description": "Search for latest AI trends",
+        "agent_index": 0
+      }
+    ]
+  },
+  "metadata": {
+    "version": "1.0.0",
+    "tags": ["research", "ai"]
+  }
+}
+```
+
+For more details on the workflow specification, see [Omium Workflow Spec](/guides/workflow-spec).
+

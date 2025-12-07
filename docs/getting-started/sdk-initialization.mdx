@@ -1,0 +1,52 @@
+---
+title: SDK Initialization
+description: Initialize your local Omium environment with your API key
+---
+
+## Run the initialization command
+
+```bash
+omium init
+```
+
+## What happens during initialization
+
+You'll be prompted to:
+
+1. **Paste your API key**
+   - Get it from [API Keys page](https://app.omium.ai/api-keys)
+   - Format: `omium_xxxxx`
+
+2. **Confirm your API URL**
+   - Defaults to `https://api.omium.ai`
+   - Press Enter to accept, or enter custom URL
+
+## Configuration location
+
+The configuration is saved to `~/.omium/config.json`:
+
+```json
+{
+  "api_key": "omium_xxxxx",
+  "api_url": "https://api.omium.ai"
+}
+```
+
+## After initialization
+
+After initialization, you can use `omium` commands without specifying API keys. The SDK automatically loads configuration from `~/.omium/config.json`.
+
+## Verify configuration
+
+```bash
+# Check if config exists
+cat ~/.omium/config.json
+
+# Test connection
+omium list
+```
+
+<Warning>
+Keep your API key secure. Never commit `~/.omium/config.json` to version control.
+</Warning>
+

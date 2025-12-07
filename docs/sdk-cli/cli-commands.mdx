@@ -1,0 +1,161 @@
+---
+title: CLI Commands
+description: Command Line Interface for Omium
+---
+
+## Overview
+
+The Omium Command Line Interface (CLI) provides a convenient way to interact with the Omium platform directly from your terminal. You can manage workflows, executions, API keys, and more.
+
+## Installation
+
+The CLI is installed as part of the Omium Python SDK:
+
+```bash
+pip install omium
+```
+
+## Initialization
+
+Before using most commands, you need to initialize your environment with your API key:
+
+```bash
+omium init
+```
+This will prompt you for your API key and API URL, saving them to `~/.omium/config.json`.
+
+## Available Commands
+
+### `omium init`
+
+Initializes your Omium environment.
+
+```bash
+omium init
+```
+
+### `omium init-workflow`
+
+Creates a new workflow template.
+
+**Usage:**
+```bash
+omium init-workflow --type <framework> --name <workflow_name> [--output <file.json>]
+```
+
+**Example:**
+```bash
+omium init-workflow --type crewai --name my-first-crew --output my_crew_workflow.json
+```
+
+### `omium run`
+
+Runs a workflow from a JSON definition file.
+
+**Usage:**
+```bash
+omium run <workflow_file.json> [--input <input_data.json>]
+```
+
+**Example:**
+```bash
+omium run my_crew_workflow.json --input '{"topic": "AI in healthcare"}'
+```
+
+### `omium list`
+
+Lists all workflow executions.
+
+**Usage:**
+```bash
+omium list [--workflow-id <id>] [--status <status>] [--limit <num>] [--offset <num>]
+```
+
+**Example:**
+```bash
+omium list --status running --limit 10
+```
+
+### `omium show`
+
+Shows details of a specific workflow execution.
+
+**Usage:**
+```bash
+omium show <execution_id>
+```
+
+**Example:**
+```bash
+omium show exec_abc123
+```
+
+### `omium replay`
+
+Replays a workflow execution from a specific checkpoint.
+
+**Usage:**
+```bash
+omium replay <execution_id> [--checkpoint-id <id>]
+```
+
+**Example:**
+```bash
+omium replay exec_abc123 --checkpoint-id chk_def456
+```
+
+### `omium rollback`
+
+Rolls back a workflow execution to a specific checkpoint.
+
+**Usage:**
+```bash
+omium rollback <execution_id> <checkpoint_id>
+```
+
+**Example:**
+```bash
+omium rollback exec_abc123 chk_def456
+```
+
+### `omium configure`
+
+Configures Omium settings interactively.
+
+**Usage:**
+```bash
+omium configure --interactive
+```
+
+### `omium export-crew`
+
+Exports a CrewAI workflow instance to an Omium-compatible JSON format.
+
+**Usage:**
+```bash
+omium export-crew <path_to_file>:<instance_name> -o <output_file.json>
+```
+
+**Example:**
+```bash
+omium export-crew my_crew_module.py:my_crew_instance -o exported_crew.json
+```
+
+### `omium export-langgraph`
+
+Exports a LangGraph compiled graph to an Omium-compatible JSON format.
+
+**Usage:**
+```bash
+omium export-langgraph <path_to_file>:<instance_name> -o <output_file.json>
+```
+
+**Example:**
+```bash
+omium export-langgraph my_graph_module.py:compiled_graph -o exported_graph.json
+```
+
+## Next Steps
+
+Learn more about the [Omium Python SDK](/sdk-cli/python-sdk) or explore [Framework Integrations](/guides/crewai-integration).
+

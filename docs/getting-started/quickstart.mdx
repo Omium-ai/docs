@@ -1,0 +1,43 @@
+---
+title: Quick Start
+description: Create and run your first workflow in minutes
+---
+
+## Step 1: Initialize Omium
+
+```bash
+omium init
+```
+
+You'll be prompted to:
+1. Paste your API key (get it from [API Keys page](https://app.omium.ai/api-keys))
+2. Confirm your API URL (defaults to `https://api.omium.ai`)
+
+## Step 2: Create a Workflow
+
+```bash
+omium init-workflow --type crewai --name my-first-workflow
+```
+
+This creates a `workflow.json` file that you can edit.
+
+## Step 3: Run Your Workflow
+
+```bash
+omium run workflow.json
+```
+
+## Step 4: View Results
+
+```bash
+# List all executions
+omium list
+
+# View specific execution
+omium show <execution-id>
+```
+
+<Card title="What's Next?" icon="lightbulb">
+  Learn how to [integrate with CrewAI](/guides/crewai-integration) or [use the Python SDK](/sdk-cli/python-sdk).
+</Card>
+

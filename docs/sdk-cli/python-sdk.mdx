@@ -1,0 +1,157 @@
+---
+title: Python SDK
+description: Use the Omium Python SDK in your applications
+---
+
+## Overview
+
+The Omium Python SDK allows you to programmatically interact with the Omium platform, enabling you to:
+- Execute workflows
+- Create checkpoints for fault tolerance
+- Manage workflow state and recovery
+- Integrate with popular agent frameworks
+
+## Installation
+
+First, ensure you have installed the Omium SDK:
+
+```bash
+pip install omium
+```
+
+## Initialization
+
+After running `omium init` in your terminal, the SDK automatically uses your saved configuration (`~/.omium/config.json`):
+
+```python
+from omium import OmiumClient
+
+# SDK automatically loads config from ~/.omium/config.json
+client = OmiumClient()
+
+# Or specify API key explicitly
+# client = OmiumClient(api_key="omium_xxxxx", api_url="https://api.omium.ai")
+```
+
+## Key Features
+
+### Execute Workflows
+
+```python
+from omium import OmiumClient
+
+client = OmiumClient()
+
+async def run_my_workflow(workflow_id: str, input_data: dict):
+    execution = await client.execute_workflow(
+        workflow_id=workflow_id,
+        input_data=input_data
+    )
+    print(f"Started execution: {execution.id} with status {execution.status}")
+    return execution
+```
+
+### Checkpointing Decorator
+
+Use the `@client.checkpoint` decorator to automatically create checkpoints for your functions. This is crucial for fault tolerance and recovery.
+
+```python
+from omium import OmiumClient
+
+client = OmiumClient()
+
+@client.checkpoint(name="data_processed_step")
+def process_data(data: dict):
+    print(f"Processing data: {data}")
+    # Simulate some work
+    processed_result = {"processed_data": data["value"] * 2}
+    return processed_result
+
+@client.checkpoint(name="analysis_step")
+def analyze_result(result: dict):
+    print(f"Analyzing result: {result}")
+    # Simulate more work
+    analysis_output = {"analysis": f"Result is {result['processed_data']}"}
+    return analysis_output
+
+async def run_pipeline():
+    initial_data = {"value": 10}
+    processed = await process_data(initial_data)
+    analysis = await analyze_result(processed)
+    print(f"Final analysis: {analysis}")
+
+# Example usage (assuming an event loop is running)
+# import asyncio
+# asyncio.run(run_pipeline())
+```
+
+### Manual Checkpoints
+
+You can also create checkpoints manually:
+
+```python
+from omium import OmiumClient
+
+client = OmiumClient()
+
+async def manual_checkpoint_example(execution_id: str, current_state: dict):
+    checkpoint = await client.create_checkpoint(
+        execution_id=execution_id,
+        name="manual_save_point",
+        state=current_state,
+        metadata={"user_note": "Saved before critical operation"}
+    )
+    print(f"Manual checkpoint created: {checkpoint.id}")
+    return checkpoint
+```
+
+### Replay and Rollback
+
+The SDK also provides methods to replay or rollback executions:
+
+```python
+from omium import OmiumClient
+
+client = OmiumClient()
+
+async def manage_execution_recovery(execution_id: str, checkpoint_id: str):
+    # Replay from a specific checkpoint
+    replay_response = await client.replay_execution(
+        execution_id=execution_id,
+        checkpoint_id=checkpoint_id
+    )
+    print(f"Replay status: {replay_response.status}")
+
+    # Rollback to a specific checkpoint
+    rollback_response = await client.rollback_execution(
+        execution_id=execution_id,
+        checkpoint_id=checkpoint_id
+    )
+    print(f"Rollback status: {rollback_response.status}")
+```
+
+## Error Handling
+
+The SDK raises exceptions for API errors. Implement `try-except` blocks to handle them gracefully.
+
+```python
+from omium import OmiumClient
+from omium.exceptions import OmiumAPIError
+
+client = OmiumClient()
+
+async def safe_api_call():
+    try:
+        # Example: trying to get a non-existent workflow
+        workflow = await client.get_workflow(workflow_id="non_existent_id")
+        print(workflow)
+    except OmiumAPIError as e:
+        print(f"API Error: {e.status_code} - {e.detail}")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+```
+
+## Next Steps
+
+Explore the [CLI Commands](/sdk-cli/cli-commands) for quick interactions or dive into [Framework Integrations](/guides/crewai-integration).
+

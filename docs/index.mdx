@@ -1,0 +1,71 @@
+---
+title: Welcome to Omium
+description: Production-grade reliability layer for multi-agent AI systems
+---
+
+<Hero
+  title="Omium"
+  subtitle="Production-Grade Reliability Layer for Multi-Agent AI Systems"
+  primaryButton={{
+    text: "Get Started",
+    link: "/getting-started/installation"
+  }}
+  secondaryButton={{
+    text: "View Dashboard",
+    link: "https://app.omium.ai"
+  }}
+/>
+
+<CardGroup cols={2}>
+  <Card
+    title="Automatic Checkpointing"
+    icon="bookmark"
+    href="/guides/checkpointing"
+  >
+    Never lose progress. Omium automatically saves execution state at key points.
+  </Card>
+  <Card
+    title="Failure Recovery"
+    icon="shield-check"
+    href="/guides/recovery"
+  >
+    Automatic recovery from failures with intelligent retry mechanisms.
+  </Card>
+  <Card
+    title="Framework Agnostic"
+    icon="puzzle-piece"
+    href="/guides/crewai-integration"
+  >
+    Works with CrewAI, LangGraph, AutoGen, and more.
+  </Card>
+  <Card
+    title="Production Ready"
+    icon="rocket"
+    href="/getting-started/quickstart"
+  >
+    Built for scale with observability and monitoring built-in.
+  </Card>
+</CardGroup>
+
+## Quick Start
+
+Get up and running in minutes:
+
+1. **Install the SDK**
+   ```bash
+   pip install omium
+   ```
+
+2. **Initialize your environment**
+   ```bash
+   omium init
+   ```
+
+3. **Create your first workflow**
+   ```bash
+   omium init-workflow --type crewai
+   ```
+
+<Card title="Next Steps" icon="arrow-right">
+  Ready to dive in? Check out our [Quick Start Guide](/getting-started/quickstart) or explore [Framework Integrations](/guides/crewai-integration).
+</Card>

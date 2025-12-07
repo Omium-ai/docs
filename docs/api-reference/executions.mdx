@@ -1,0 +1,166 @@
+---
+title: Executions API
+description: Track and manage workflow executions
+---
+
+## Base URL
+
+All API requests should be made to:
+
+`https://api.omium.ai/api/v1`
+
+## Authentication
+
+All API requests require authentication using an API key. Include it in the `X-API-Key` header or as a Bearer token.
+
+```bash
+# Using X-API-Key header (recommended)
+curl -X GET "https://api.omium.ai/api/v1/executions" \
+  -H "X-API-Key: omium_xxxxx"
+
+# Using Bearer token
+curl -X GET "https://api.omium.ai/api/v1/executions" \
+  -H "Authorization: Bearer omium_xxxxx"
+```
+
+## Endpoints
+
+### List Executions
+
+`GET /executions`
+
+List all workflow executions for the authenticated tenant.
+
+**Query Parameters:**
+- `workflow_id`: Filter by a specific workflow ID.
+- `status`: `running` | `completed` | `failed` | `cancelled` | `paused`
+- `page`: Page number (default: 1)
+- `page_size`: Items per page (default: 20)
+
+**Response:**
+```json
+{
+  "items": [
+    {
+      "id": "exec_abc",
+      "workflow_id": "workflow_xyz",
+      "status": "running",
+      "created_at": "2025-01-01T12:00:00Z",
+      "updated_at": "2025-01-01T12:01:00Z",
+      "input_data": { ... },
+      "output_data": null
+    }
+  ],
+  "total": 50,
+  "page": 1,
+  "page_size": 20
+}
+```
+
+### Get Execution Details
+
+`GET /executions/{execution_id}`
+
+Retrieve details of a specific workflow execution.
+
+**Path Parameters:**
+- `execution_id`: The ID of the execution.
+
+**Response:**
+```json
+{
+  "id": "exec_abc",
+  "workflow_id": "workflow_xyz",
+  "status": "completed",
+  "created_at": "2025-01-01T12:00:00Z",
+  "updated_at": "2025-01-01T12:05:00Z",
+  "input_data": { "query": "latest AI trends" },
+  "output_data": { "report": "..." },
+  "error": null,
+  "checkpoints": [
+    { "id": "chk_1", "name": "start", "created_at": "..." },
+    { "id": "chk_2", "name": "data_processed", "created_at": "..." }
+  ]
+}
+```
+
+### Create Execution
+
+`POST /executions`
+
+Initiate a new workflow execution.
+
+**Request Body:**
+```json
+{
+  "workflow_id": "workflow_xyz",
+  "input_data": {
+    "query": "Research quantum computing advancements"
+  },
+  "metadata": {
+    "user_id": "user_123",
+    "priority": "high"
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "id": "exec_new_123",
+  "workflow_id": "workflow_xyz",
+  "status": "running",
+  "created_at": "2025-01-01T12:10:00Z"
+}
+```
+
+### Replay Execution from Checkpoint
+
+`POST /executions/{execution_id}/replay`
+
+Replay a failed or paused execution from a specific checkpoint.
+
+**Path Parameters:**
+- `execution_id`: The ID of the execution to replay.
+
+**Request Body:**
+```json
+{
+  "checkpoint_id": "checkpoint_456"
+}
+```
+
+**Response:**
+```json
+{
+  "id": "exec_abc",
+  "status": "running",
+  "message": "Execution replayed from checkpoint_456"
+}
+```
+
+### Rollback Execution to Checkpoint
+
+`POST /executions/{execution_id}/rollback`
+
+Rollback an execution to a previous checkpoint, discarding subsequent states.
+
+**Path Parameters:**
+- `execution_id`: The ID of the execution to rollback.
+
+**Request Body:**
+```json
+{
+  "checkpoint_id": "checkpoint_456"
+}
+```
+
+**Response:**
+```json
+{
+  "id": "exec_abc",
+  "status": "paused",
+  "message": "Execution rolled back to checkpoint_456"
+}
+```
+

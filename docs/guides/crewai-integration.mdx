@@ -1,0 +1,75 @@
+---
+title: CrewAI Integration
+description: Integrate Omium with your CrewAI workflows
+---
+
+## Use Omium with CrewAI
+
+Omium provides two ways to integrate with CrewAI:
+
+1. **SDK-only integration**: Wrap your existing CrewAI code with Omium primitives for checkpointing and failure handling.
+2. **Workflow import**: Export your CrewAI workflow definition and import it into Omium's Automation page for full UI management.
+
+### Option 1: SDK Integration (Quick Start)
+
+```python
+from omium import OmiumClient
+from crewai import Agent, Task, Crew
+
+client = OmiumClient()
+
+@client.checkpoint(name="crew_execution")
+def run_crew_workflow():
+    researcher = Agent(
+        role='Researcher',
+        goal='Research the topic',
+        backstory='You are a research expert'
+    )
+    
+    task = Task(
+        description='Research the topic',
+        agent=researcher
+    )
+    
+    crew = Crew(agents=[researcher], tasks=[task])
+    return crew.kickoff()
+
+# Run with Omium checkpointing and failure handling
+result = run_crew_workflow()
+```
+
+### Option 2: Export CrewAI Workflow to Omium
+
+Export your CrewAI workflow definition to import into Omium's Automation page:
+
+```bash
+omium export-crew my_crew.py:my_crew_instance -o workflow.json
+```
+
+This creates a JSON file that you can:
+1. Import in the [Automation page](https://app.omium.ai/automation) (click "Import from JSON")
+2. Edit and manage in Omium UI
+3. Execute via Omium for reliability and monitoring
+
+**Example: `my_crew.py`**
+```python
+from crewai import Agent, Task, Crew
+
+researcher = Agent(
+    role='Researcher',
+    goal='Research the topic',
+    backstory='You are a research expert'
+)
+
+task = Task(
+    description='Research the topic',
+    agent=researcher
+)
+
+my_crew_instance = Crew(agents=[researcher], tasks=[task])
+```
+Then export:
+```bash
+omium export-crew my_crew.py:my_crew_instance -o my_workflow.json
+```
+

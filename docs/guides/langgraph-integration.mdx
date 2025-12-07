@@ -1,0 +1,89 @@
+---
+title: LangGraph Integration
+description: Integrate Omium with your LangGraph workflows
+---
+
+## Use Omium with LangGraph
+
+Integrate LangGraph workflows with Omium for automatic checkpointing and failure recovery:
+
+### Option 1: SDK Integration
+
+```python
+from omium import OmiumClient
+from langgraph.graph import StateGraph
+
+client = OmiumClient()
+
+# Your LangGraph workflow
+# Assuming WorkflowState, process_node, respond_node are defined
+class WorkflowState:
+    # Define your state here
+    pass
+
+def process_node(state):
+    print("Processing...")
+    return {"output": "processed"}
+
+def respond_node(state):
+    print("Responding...")
+    return {"output": "responded"}
+
+graph = StateGraph(WorkflowState)
+graph.add_node("process", process_node)
+graph.add_node("respond", respond_node)
+graph.add_edge("process", "respond")
+compiled = graph.compile()
+
+# Wrap with Omium
+@client.checkpoint(name="langgraph_execution")
+def run_langgraph(state):
+    return compiled.invoke(state)
+
+# Execute with Omium reliability layer
+# result = run_langgraph(initial_state) # initial_state needs to be defined
+```
+
+### Option 2: Export LangGraph Workflow to Omium
+
+Export your LangGraph compiled graph to import into Omium:
+
+```bash
+omium export-langgraph my_graph.py:compiled_graph -o workflow.json
+```
+
+**Example: `my_graph.py`**
+```python
+from langgraph.graph import StateGraph
+
+# Assuming WorkflowState, process_node, respond_node are defined
+class WorkflowState:
+    # Define your state here
+    pass
+
+def process_node(state):
+    print("Processing...")
+    return {"output": "processed"}
+
+def respond_node(state):
+    print("Responding...")
+    return {"output": "responded"}
+
+graph = StateGraph(WorkflowState)
+graph.add_node("process", process_node)
+graph.add_node("respond", respond_node)
+graph.add_edge("process", "respond")
+
+compiled_graph = graph.compile()
+```
+Then export:
+```bash
+omium export-langgraph my_graph.py:compiled_graph -o my_workflow.json
+```
+
+Import the JSON in [Automation page](https://app.omium.ai/automation) to:
+- Visualize the graph structure
+- Edit workflow configuration
+- Control retries and timeouts per node
+- Execute via Omium execution engine
+
