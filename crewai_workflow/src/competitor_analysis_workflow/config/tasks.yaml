@@ -1,0 +1,39 @@
+---
+scout_competitor_website:
+  description: 'Analyze the competitor website at {competitor_url} to extract comprehensive
+    competitive intelligence. Focus on identifying: 1) Main value propositions and
+    key messaging, 2) Pricing tiers, plans, and cost structure, 3) Target audience
+    indicators (language, imagery, case studies), 4) Competitive differentiators and
+    positioning statements, 5) Product/service offerings and capabilities highlighted
+    on the homepage.'
+  expected_output: 'A structured competitor profile report containing: value propositions,
+    pricing analysis, target audience profile, key messaging themes, and competitive
+    positioning insights extracted from the website analysis.'
+  agent: market_scout
+analyze_feature_comparison:
+  description: 'Research industry standards and benchmarks in the {industry} sector
+    to compare the competitor''s features and capabilities. Analyze: 1) Industry-standard
+    features and expectations, 2) Competitor''s feature set against market norms,
+    3) Unique features or capabilities that differentiate them, 4) Missing features
+    or gaps in their offering, 5) Feature quality and implementation compared to market
+    leaders.'
+  expected_output: A detailed feature analysis report including industry benchmark
+    comparison, competitor feature strengths and weaknesses, unique selling points,
+    and identified gaps in their offering compared to market standards.
+  agent: feature_analyst
+  context:
+  - scout_competitor_website
+create_swot_analysis_and_strategic_recommendations:
+  description: 'Synthesize the competitor intelligence from website analysis and feature
+    comparison to create a comprehensive strategic assessment. Develop: 1) Complete
+    SWOT analysis (Strengths, Weaknesses, Opportunities, Threats) based on all gathered
+    data, 2) Three specific strategic counter-moves for {company_name} to improve
+    competitive position, 3) Priority recommendations with rationale and potential
+    impact, 4) Risk assessment for each strategic recommendation.'
+  expected_output: A strategic report containing a detailed SWOT analysis matrix and
+    3 prioritized strategic counter-moves with implementation guidance, impact assessment,
+    and competitive advantages for {company_name}.
+  agent: strategy_consultant
+  context:
+  - scout_competitor_website
+  - analyze_feature_comparison
