@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/schema.json",
-  "name": "Omium",
+  "name": "omium",
   "theme": "prism",
   "version": "1.0.0",
   "favicon": "/favicon.svg",
