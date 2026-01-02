@@ -1,157 +1,233 @@
 ---
 title: Python SDK
-description: Use the Omium Python SDK in your applications
+description: Full API reference for the Omium Python SDK
 ---
 
-## Overview
+The Omium Python SDK provides two ways to integrate:
 
-The Omium Python SDK allows you to programmatically interact with the Omium platform, enabling you to:
-- Execute workflows
-- Create checkpoints for fault tolerance
-- Manage workflow state and recovery
-- Integrate with popular agent frameworks
+1. **Auto-Instrumentation** (Recommended) - Automatically captures traces and checkpoints
+2. **Manual API** - Explicit control over checkpoints and tracing
 
 ## Installation
-
-First, ensure you have installed the Omium SDK:
 
 ```bash
 pip install omium
 ```
 
-## Initialization
+---
 
-After running `omium init` in your terminal, the SDK automatically uses your saved configuration (`~/.omium/config.json`):
+## Auto-Instrumentation (Recommended)
+
+The simplest way to use Omium. One-time setup, then your existing code works unchanged.
+
+### Initialize
 
 ```python
-from omium import OmiumClient
+import omium
 
-# SDK automatically loads config from ~/.omium/config.json
-client = OmiumClient()
+# Option 1: With API key directly
+omium.init(api_key="om_xxx")
 
-# Or specify API key explicitly
-# client = OmiumClient(api_key="omium_xxxxx", api_url="https://api.omium.ai")
+# Option 2: Load from config file (~/.omium/config.json)
+omium.init()  # Uses saved config from 'omium init' CLI
 ```
 
-## Key Features
-
-### Execute Workflows
+### Instrument LangGraph
 
 ```python
-from omium import OmiumClient
+import omium
 
-client = OmiumClient()
+omium.init(api_key="om_xxx")
+omium.instrument_langgraph()  # Enables auto-tracing
 
-async def run_my_workflow(workflow_id: str, input_data: dict):
-    execution = await client.execute_workflow(
-        workflow_id=workflow_id,
-        input_data=input_data
-    )
-    print(f"Started execution: {execution.id} with status {execution.status}")
-    return execution
+from langgraph.graph import StateGraph
+
+# Your LangGraph code - traces captured automatically
+graph = StateGraph(MyState)
+# ... build graph
+app = graph.compile()
+result = app.invoke({"input": "Hello"})
 ```
 
-### Checkpointing Decorator
-
-Use the `@client.checkpoint` decorator to automatically create checkpoints for your functions. This is crucial for fault tolerance and recovery.
+### Instrument CrewAI
 
 ```python
-from omium import OmiumClient
+import omium
 
-client = OmiumClient()
+omium.init(api_key="om_xxx")
+omium.instrument_crewai()  # Enables auto-tracing
 
-@client.checkpoint(name="data_processed_step")
+from crewai import Crew, Agent, Task
+
+# Your CrewAI code - traces captured automatically
+crew = Crew(agents=[...], tasks=[...])
+result = crew.kickoff()
+```
+
+---
+
+## Manual Tracing
+
+For explicit control over what gets traced.
+
+### @trace Decorator
+
+```python
+import omium
+
+omium.init(api_key="om_xxx")
+
+@omium.trace("process_data")
 def process_data(data: dict):
-    print(f"Processing data: {data}")
-    # Simulate some work
-    processed_result = {"processed_data": data["value"] * 2}
-    return processed_result
+    # Function execution is traced
+    return {"processed": data}
 
-@client.checkpoint(name="analysis_step")
-def analyze_result(result: dict):
-    print(f"Analyzing result: {result}")
-    # Simulate more work
-    analysis_output = {"analysis": f"Result is {result['processed_data']}"}
-    return analysis_output
-
-async def run_pipeline():
-    initial_data = {"value": 10}
-    processed = await process_data(initial_data)
-    analysis = await analyze_result(processed)
-    print(f"Final analysis: {analysis}")
-
-# Example usage (assuming an event loop is running)
-# import asyncio
-# asyncio.run(run_pipeline())
+@omium.trace("analyze_result")  
+async def analyze_result(data: dict):
+    # Works with async functions too
+    return {"analysis": "complete"}
 ```
 
-### Manual Checkpoints
+### @checkpoint Decorator
 
-You can also create checkpoints manually:
+```python
+import omium
+
+omium.init(api_key="om_xxx")
+
+@omium.checkpoint("important_step")
+def important_step(data: dict):
+    # Creates checkpoint before execution
+    # Can recover from here if later steps fail
+    return expensive_operation(data)
+```
+
+---
+
+## Callback Handler
+
+For LangChain-style callback integration:
+
+```python
+from omium import OmiumCallbackHandler
+
+handler = OmiumCallbackHandler()
+
+# Use with LangChain
+chain.invoke(input_data, config={"callbacks": [handler]})
+
+# Use with LangGraph
+app.invoke(input_data, config={"callbacks": [handler]})
+```
+
+---
+
+## OmiumClient API
+
+For direct checkpoint management:
 
 ```python
 from omium import OmiumClient
 
 client = OmiumClient()
+await client.connect()
 
-async def manual_checkpoint_example(execution_id: str, current_state: dict):
-    checkpoint = await client.create_checkpoint(
-        execution_id=execution_id,
-        name="manual_save_point",
-        state=current_state,
-        metadata={"user_note": "Saved before critical operation"}
-    )
-    print(f"Manual checkpoint created: {checkpoint.id}")
-    return checkpoint
+# Create checkpoint
+checkpoint = await client.create_checkpoint(
+    checkpoint_name="after_data_load",
+    state={"data": my_data},
+    execution_id="exec-123",
+    metadata={"step": 1}
+)
+
+# Get checkpoint
+checkpoint = await client.get_checkpoint(
+    checkpoint_id="cp-456",
+    include_state=True
+)
+
+# List checkpoints
+checkpoints = await client.list_checkpoints(
+    execution_id="exec-123",
+    limit=10
+)
+
+await client.close()
 ```
 
-### Replay and Rollback
+### OmiumClient Methods
 
-The SDK also provides methods to replay or rollback executions:
+| Method | Description |
+|--------|-------------|
+| `connect()` | Establish connection to Omium services |
+| `close()` | Close connection |
+| `create_checkpoint()` | Create a new checkpoint |
+| `get_checkpoint()` | Retrieve a checkpoint by ID |
+| `list_checkpoints()` | List checkpoints for an execution |
+| `set_execution_context()` | Set default execution/agent context |
+
+---
+
+## Configuration
+
+### OmiumConfig
 
 ```python
-from omium import OmiumClient
+from omium import OmiumConfig
 
-client = OmiumClient()
+config = OmiumConfig(
+    api_key="om_xxx",
+    api_url="https://api.omium.ai",
+    auto_checkpoint=True,
+    checkpoint_interval=10  # seconds
+)
 
-async def manage_execution_recovery(execution_id: str, checkpoint_id: str):
-    # Replay from a specific checkpoint
-    replay_response = await client.replay_execution(
-        execution_id=execution_id,
-        checkpoint_id=checkpoint_id
-    )
-    print(f"Replay status: {replay_response.status}")
-
-    # Rollback to a specific checkpoint
-    rollback_response = await client.rollback_execution(
-        execution_id=execution_id,
-        checkpoint_id=checkpoint_id
-    )
-    print(f"Rollback status: {rollback_response.status}")
+omium.configure(config)
 ```
 
-## Error Handling
+### Config File
 
-The SDK raises exceptions for API errors. Implement `try-except` blocks to handle them gracefully.
+The CLI stores config in `~/.omium/config.json`:
+
+```json
+{
+  "api_key": "om_xxx",
+  "api_url": "https://api.omium.ai/api/v1",
+  "region": "us-east-1"
+}
+```
+
+---
+
+## Exceptions
 
 ```python
-from omium import OmiumClient
-from omium.exceptions import OmiumAPIError
+from omium import (
+    CheckpointError,
+    CheckpointNotFoundError,
+    CheckpointValidationError,
+    ConnectionError
+)
 
-client = OmiumClient()
-
-async def safe_api_call():
-    try:
-        # Example: trying to get a non-existent workflow
-        workflow = await client.get_workflow(workflow_id="non_existent_id")
-        print(workflow)
-    except OmiumAPIError as e:
-        print(f"API Error: {e.status_code} - {e.detail}")
-    except Exception as e:
-        print(f"An unexpected error occurred: {e}")
+try:
+    await client.get_checkpoint("invalid-id")
+except CheckpointNotFoundError:
+    print("Checkpoint not found")
+except CheckpointError as e:
+    print(f"Checkpoint error: {e}")
+except ConnectionError as e:
+    print(f"Connection failed: {e}")
 ```
+
+---
 
 ## Next Steps
 
-Explore the [CLI Commands](/sdk-cli/cli-commands) for quick interactions or dive into [Framework Integrations](/guides/crewai-integration).
-
+<CardGroup cols={2}>
+  <Card title="CLI Commands" icon="terminal" href="/sdk-cli/cli-commands">
+    All available CLI commands
+  </Card>
+  <Card title="LangGraph Guide" icon="diagram-project" href="/guides/langgraph-integration">
+    Deep dive into LangGraph integration
+  </Card>
+</CardGroup>

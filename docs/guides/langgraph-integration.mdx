@@ -1,89 +1,252 @@
 ---
 title: LangGraph Integration
-description: Integrate Omium with your LangGraph workflows
+description: Auto-instrument your LangGraph workflows with Omium
 ---
 
-## Use Omium with LangGraph
+<Note>
+Omium provides **zero-code** instrumentation for LangGraph. All `invoke()`, `ainvoke()`, `stream()`, and `astream()` calls are automatically traced.
+</Note>
 
-Integrate LangGraph workflows with Omium for automatic checkpointing and failure recovery:
-
-### Option 1: SDK Integration
+## Quick Start
 
 ```python
-from omium import OmiumClient
+import omium
+
+# 1. Initialize Omium
+omium.init(api_key="om_xxx")
+
+# 2. Enable auto-instrumentation
+omium.instrument_langgraph()
+
+# 3. Your existing LangGraph code works unchanged
 from langgraph.graph import StateGraph
+from typing import TypedDict
 
-client = OmiumClient()
+class MyState(TypedDict):
+    input: str
+    output: str
 
-# Your LangGraph workflow
-# Assuming WorkflowState, process_node, respond_node are defined
-class WorkflowState:
-    # Define your state here
-    pass
+def process_node(state: MyState) -> MyState:
+    return {"output": f"Processed: {state['input']}"}
 
-def process_node(state):
-    print("Processing...")
-    return {"output": "processed"}
-
-def respond_node(state):
-    print("Responding...")
-    return {"output": "responded"}
-
-graph = StateGraph(WorkflowState)
+# Build graph
+graph = StateGraph(MyState)
 graph.add_node("process", process_node)
-graph.add_node("respond", respond_node)
-graph.add_edge("process", "respond")
-compiled = graph.compile()
+graph.set_entry_point("process")
+graph.set_finish_point("process")
 
-# Wrap with Omium
-@client.checkpoint(name="langgraph_execution")
-def run_langgraph(state):
-    return compiled.invoke(state)
+app = graph.compile()
 
-# Execute with Omium reliability layer
-# result = run_langgraph(initial_state) # initial_state needs to be defined
+# This execution is automatically traced!
+result = app.invoke({"input": "Hello, World!"})
 ```
 
-### Option 2: Export LangGraph Workflow to Omium
+View the trace at [app.omium.ai](https://app.omium.ai).
 
-Export your LangGraph compiled graph to import into Omium:
+---
 
-```bash
-omium export-langgraph my_graph.py:compiled_graph -o workflow.json
-```
+## What Gets Captured
 
-**Example: `my_graph.py`**
+| Data | Description |
+|------|-------------|
+| **Execution ID** | Unique ID for each `invoke()`/`ainvoke()` call |
+| **Input** | The input state passed to the graph |
+| **Output** | The final state returned by the graph |
+| **Duration** | Total execution time |
+| **Node Count** | Number of nodes in the graph |
+| **Errors** | Any exceptions thrown during execution |
+
+For streaming executions (`stream()`, `astream()`), chunk counts are also captured.
+
+---
+
+## Instrumentation Methods
+
+### `instrument_langgraph()`
+
+Enable auto-instrumentation. Call once at application startup.
+
 ```python
+import omium
+
+omium.init(api_key="om_xxx")
+omium.instrument_langgraph()
+
+# All subsequent LangGraph executions are traced
+```
+
+### `uninstrument_langgraph()`
+
+Disable instrumentation (restores original methods).
+
+```python
+import omium
+
+omium.uninstrument_langgraph()
+```
+
+---
+
+## Async Support
+
+Works with both sync and async execution:
+
+```python
+import asyncio
+import omium
+
+omium.init(api_key="om_xxx")
+omium.instrument_langgraph()
+
+# Async invoke - automatically traced
+result = await app.ainvoke({"input": "Hello"})
+
+# Async streaming - automatically traced
+async for chunk in app.astream({"input": "Hello"}):
+    print(chunk)
+```
+
+---
+
+## Streaming
+
+Streaming executions are also traced:
+
+```python
+import omium
+
+omium.init(api_key="om_xxx")
+omium.instrument_langgraph()
+
+# Sync streaming
+for chunk in app.stream({"input": "Hello"}):
+    print(chunk)
+
+# Async streaming
+async for chunk in app.astream({"input": "Hello"}):
+    print(chunk)
+```
+
+Omium captures:
+- Total chunks streamed
+- Events every 10 chunks for progress tracking
+- Any errors during streaming
+
+---
+
+## Configuration Options
+
+```python
+import omium
+from omium import OmiumConfig
+
+config = OmiumConfig(
+    api_key="om_xxx",
+    project="my-langgraph-app",  # Optional: group executions by project
+    auto_trace=True,              # Enable auto-tracing (default: True)
+    auto_checkpoint=True,         # Enable auto-checkpointing (default: True)
+)
+
+omium.configure(config)
+omium.instrument_langgraph()
+```
+
+---
+
+## Using with Callbacks
+
+You can also use the callback handler for more control:
+
+```python
+from omium import OmiumCallbackHandler
+
+handler = OmiumCallbackHandler()
+
+# Pass callback to LangGraph
+result = app.invoke(
+    {"input": "Hello"},
+    config={"callbacks": [handler]}
+)
+```
+
+---
+
+## Example: Multi-Node Graph
+
+```python
+import omium
 from langgraph.graph import StateGraph
+from typing import TypedDict
 
-# Assuming WorkflowState, process_node, respond_node are defined
-class WorkflowState:
-    # Define your state here
-    pass
+omium.init(api_key="om_xxx")
+omium.instrument_langgraph()
 
-def process_node(state):
-    print("Processing...")
-    return {"output": "processed"}
+class AgentState(TypedDict):
+    messages: list
+    next_step: str
 
-def respond_node(state):
-    print("Responding...")
-    return {"output": "responded"}
+def agent_node(state):
+    # Your agent logic
+    return {"messages": state["messages"] + ["Agent thinking..."]}
 
-graph = StateGraph(WorkflowState)
-graph.add_node("process", process_node)
-graph.add_node("respond", respond_node)
-graph.add_edge("process", "respond")
+def tool_node(state):
+    # Your tool logic
+    return {"messages": state["messages"] + ["Tool executed"]}
 
-compiled_graph = graph.compile()
+def should_continue(state):
+    return "tool" if "call_tool" in state.get("next_step", "") else "end"
+
+# Build multi-node graph
+graph = StateGraph(AgentState)
+graph.add_node("agent", agent_node)
+graph.add_node("tool", tool_node)
+graph.add_conditional_edges("agent", should_continue, {"tool": "tool", "end": "__end__"})
+graph.add_edge("tool", "agent")
+graph.set_entry_point("agent")
+
+app = graph.compile()
+
+# All node transitions are automatically traced
+result = app.invoke({"messages": [], "next_step": ""})
 ```
-Then export:
+
+---
+
+## Troubleshooting
+
+### ImportError: LangGraph is not installed
+
 ```bash
-omium export-langgraph my_graph.py:compiled_graph -o my_workflow.json
+pip install langgraph
 ```
 
-Import the JSON in [Automation page](https://app.omium.ai/automation) to:
-- Visualize the graph structure
-- Edit workflow configuration
-- Control retries and timeouts per node
-- Execute via Omium execution engine
+### Traces not appearing
 
+1. Verify `omium.init()` was called before `instrument_langgraph()`
+2. Check your API key is valid
+3. Ensure you have network access to api.omium.ai
+
+### Disable tracing temporarily
+
+```python
+omium.uninstrument_langgraph()
+
+# Run without tracing
+result = app.invoke(input)
+
+# Re-enable
+omium.instrument_langgraph()
+```
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="CrewAI Integration" icon="users" href="/guides/crewai-integration">
+    Integrate Omium with CrewAI
+  </Card>
+  <Card title="Python SDK" icon="code" href="/sdk-cli/python-sdk">
+    Full SDK API reference
+  </Card>
+</CardGroup>

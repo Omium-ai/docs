@@ -1,6 +1,17 @@
 ---
 title: Installation
-description: Install the Omium Python SDK and CLI
+description: Install the Omium SDK
+---
+
+## Requirements
+
+<Note>
+Omium requires Python 3.9 or higher. We recommend using a virtual environment.
+</Note>
+
+- Python 3.9+
+- pip (Python package manager)
+
 ---
 
 ## Install via pip
@@ -15,12 +26,46 @@ pip install omium
 omium --version
 ```
 
-## Requirements
+**Expected output:**
+```
+Omium SDK v0.3.0
+```
 
-- Python 3.8 or higher
-- pip or pip3
+<Tip>
+If you get a "command not found" error, ensure your Python scripts directory is in your PATH.
+</Tip>
+
+---
+
+## Virtual Environment (Recommended)
+
+<Warning>
+Using a virtual environment prevents conflicts with other Python packages.
+</Warning>
+
+```bash
+# Create virtual environment
+python -m venv omium-env
+
+# Activate it
+# Windows:
+omium-env\Scripts\activate
+# macOS/Linux:
+source omium-env/bin/activate
+
+# Install Omium
+pip install omium
+```
+
+---
 
 ## Next Steps
 
-After installation, [initialize your environment](/getting-started/sdk-initialization).
-
+<CardGroup cols={2}>
+  <Card title="Quick Start" icon="rocket" href="/getting-started/quickstart">
+    Create your first instrumented workflow
+  </Card>
+  <Card title="Get API Key" icon="key" href="https://app.omium.ai/api-keys">
+    Create an API key from the dashboard
+  </Card>
+</CardGroup>

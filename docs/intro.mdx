@@ -3,69 +3,116 @@ title: Welcome to Omium
 description: Production-grade reliability layer for multi-agent AI systems
 ---
 
-<Hero
-  title="Omium"
-  subtitle="Production-Grade Reliability Layer for Multi-Agent AI Systems"
-  primaryButton={{
-    text: "Get Started",
-    link: "/getting-started/installation"
-  }}
-  secondaryButton={{
-    text: "View Dashboard",
-    link: "https://app.omium.ai"
-  }}
-/>
-
 <CardGroup cols={2}>
   <Card
-    title="Automatic Checkpointing"
-    icon="bookmark"
-    href="/guides/checkpointing"
+    title="Automatic Tracing"
+    icon="chart-line"
+    href="/guides/langgraph-integration"
   >
-    Never lose progress. Omium automatically saves execution state at key points.
+    Auto-instrument your LangGraph or CrewAI workflows with one line of code.
   </Card>
   <Card
-    title="Failure Recovery"
+    title="Checkpointing & Recovery"
     icon="shield-check"
-    href="/guides/recovery"
+    href="/api-reference/checkpoints"
   >
-    Automatic recovery from failures with intelligent retry mechanisms.
+    Automatic checkpoints let you resume from failures without losing progress.
   </Card>
   <Card
     title="Framework Agnostic"
     icon="puzzle-piece"
     href="/guides/crewai-integration"
   >
-    Works with CrewAI, LangGraph, AutoGen, and more.
+    Works with LangGraph, CrewAI, AutoGen, and any Python AI workflow.
   </Card>
   <Card
-    title="Production Ready"
+    title="Production Dashboard"
     icon="rocket"
-    href="/getting-started/quickstart"
+    href="https://app.omium.ai"
   >
-    Built for scale with observability and monitoring built-in.
+    Monitor executions, view traces, and replay failed runs from the dashboard.
   </Card>
 </CardGroup>
 
+---
+
+## How Omium Works
+
+<Note>
+Omium sits between your AI agent framework and the LLM, automatically capturing traces and creating checkpoints for recovery.
+</Note>
+
+```mermaid
+flowchart LR
+    A[Your AI Agent] --> B[Omium SDK]
+    B --> C[Auto-Tracing]
+    B --> D[Checkpoints]
+    B --> E[Recovery]
+    C --> F[Dashboard]
+    D --> F
+    E --> F
+    F --> G[Monitor & Replay]
+```
+
+---
+
 ## Quick Start
 
-Get up and running in minutes:
+Get up and running in 3 steps:
 
-1. **Install the SDK**
-   ```bash
-   pip install omium
-   ```
+### 1. Install the SDK
 
-2. **Initialize your environment**
-   ```bash
-   omium init
-   ```
+```bash
+pip install omium
+```
 
-3. **Create your first workflow**
-   ```bash
-   omium init-workflow --type crewai
-   ```
+### 2. Initialize & Instrument
 
-<Card title="Next Steps" icon="arrow-right">
-  Ready to dive in? Check out our [Quick Start Guide](/getting-started/quickstart) or explore [Framework Integrations](/guides/crewai-integration).
-</Card>
+<Tip>
+Get your API key from [app.omium.ai/api-keys](https://app.omium.ai/api-keys)
+</Tip>
+
+```python
+import omium
+
+# Initialize with your API key
+omium.init(api_key="om_xxx")
+
+# Auto-instrument your framework
+omium.instrument_langgraph()  # or omium.instrument_crewai()
+```
+
+### 3. Run Your Workflow
+
+Your existing code works unchanged:
+
+```python
+from langgraph.graph import StateGraph
+
+# Your workflow code runs normally
+# Omium automatically captures traces and checkpoints
+graph = StateGraph(...)
+app = graph.compile()
+result = app.invoke({"input": "Hello"})
+```
+
+View your execution at [app.omium.ai](https://app.omium.ai)!
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/getting-started/installation">
+    Install the Omium SDK
+  </Card>
+  <Card title="Quick Start" icon="rocket" href="/getting-started/quickstart">
+    5-minute setup guide
+  </Card>
+  <Card title="LangGraph" icon="diagram-project" href="/guides/langgraph-integration">
+    Integrate with LangGraph
+  </Card>
+  <Card title="CrewAI" icon="users" href="/guides/crewai-integration">
+    Integrate with CrewAI
+  </Card>
+</CardGroup>

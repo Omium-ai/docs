@@ -1,43 +1,126 @@
 ---
 title: Quick Start
-description: Create and run your first workflow in minutes
+description: Get your first workflow running with Omium in 5 minutes
 ---
 
-## Step 1: Initialize Omium
+<Note>
+This guide assumes you have Python 3.9+ installed. If you don't have an Omium account yet, [sign up here](https://omium.ai).
+</Note>
+
+## Prerequisites
+
+- Python 3.9+
+- An Omium account
+- An API key from [app.omium.ai/api-keys](https://app.omium.ai/api-keys)
+
+---
+
+## Step 1: Install the SDK
 
 ```bash
-omium init
+pip install omium
 ```
 
-You'll be prompted to:
-1. Paste your API key (get it from [API Keys page](https://app.omium.ai/api-keys))
-2. Confirm your API URL (defaults to `https://api.omium.ai`)
+<Tip>
+Verify installation with `omium --version`
+</Tip>
 
-## Step 2: Create a Workflow
+## Step 2: Initialize Omium
 
-```bash
-omium init-workflow --type crewai --name my-first-workflow
-```
+<Tabs>
+  <Tab title="CLI (Recommended)">
+    ```bash
+    omium init
+    ```
+    
+    You'll be prompted to enter your API key. Config is saved to `~/.omium/config.json`.
+  </Tab>
+  <Tab title="Python">
+    ```python
+    import omium
+    
+    omium.init(api_key="om_xxx")
+    ```
+  </Tab>
+</Tabs>
 
-This creates a `workflow.json` file that you can edit.
+## Step 3: Instrument Your Framework
 
-## Step 3: Run Your Workflow
+<Tabs>
+  <Tab title="LangGraph">
+    ```python
+    import omium
+    
+    omium.init(api_key="om_xxx")
+    omium.instrument_langgraph()
+    
+    # Your LangGraph code works unchanged
+    from langgraph.graph import StateGraph
+    
+    graph = StateGraph(...)
+    app = graph.compile()
+    result = app.invoke({"input": "Hello"})
+    ```
+  </Tab>
+  <Tab title="CrewAI">
+    ```python
+    import omium
+    
+    omium.init(api_key="om_xxx")
+    omium.instrument_crewai()
+    
+    # Your CrewAI code works unchanged
+    from crewai import Crew, Agent, Task
+    
+    crew = Crew(agents=[...], tasks=[...])
+    result = crew.kickoff()
+    ```
+  </Tab>
+  <Tab title="Manual Tracing">
+    ```python
+    import omium
+    
+    omium.init(api_key="om_xxx")
+    
+    @omium.trace("process_data")
+    def process_data(data):
+        return transformed_data
+    
+    @omium.checkpoint("important_step")
+    def important_step():
+        return result
+    ```
+  </Tab>
+</Tabs>
 
-```bash
-omium run workflow.json
-```
+## Step 4: View in Dashboard
 
-## Step 4: View Results
+<Info>
+After running your workflow, all traces and checkpoints appear automatically in the dashboard.
+</Info>
 
-```bash
-# List all executions
-omium list
+Visit [app.omium.ai](https://app.omium.ai) to see:
 
-# View specific execution
-omium show <execution-id>
-```
+- **Executions** - All workflow runs with status
+- **Traces** - Step-by-step execution details
+- **Checkpoints** - Recovery points for failed runs
+- **Replay** - Re-run failed executions from checkpoints
 
-<Card title="What's Next?" icon="lightbulb">
-  Learn how to [integrate with CrewAI](/guides/crewai-integration) or [use the Python SDK](/sdk-cli/python-sdk).
-</Card>
+---
 
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="LangGraph Integration" icon="diagram-project" href="/guides/langgraph-integration">
+    Deep dive into LangGraph auto-instrumentation
+  </Card>
+  <Card title="CrewAI Integration" icon="users" href="/guides/crewai-integration">
+    Integrate Omium with CrewAI workflows
+  </Card>
+  <Card title="Python SDK" icon="code" href="/sdk-cli/python-sdk">
+    Full API reference for the SDK
+  </Card>
+  <Card title="CLI Commands" icon="terminal" href="/sdk-cli/cli-commands">
+    All available CLI commands
+  </Card>
+</CardGroup>

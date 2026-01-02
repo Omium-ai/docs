@@ -1,161 +1,257 @@
 ---
 title: CLI Commands
-description: Command Line Interface for Omium
+description: Complete reference for the Omium CLI
 ---
 
-## Overview
+The Omium CLI (`omium`) provides commands for configuration, running workflows, and managing executions.
 
-The Omium Command Line Interface (CLI) provides a convenient way to interact with the Omium platform directly from your terminal. You can manage workflows, executions, API keys, and more.
+## Quick Reference
+
+| Command | Description |
+|---------|-------------|
+| `omium init` | Initialize SDK configuration |
+| `omium run <script.py>` | Run script with tracing |
+| `omium list` | List recent executions |
+| `omium show <id>` | Show execution details |
+| `omium logs <id>` | Stream execution logs |
+| `omium replay <id>` | Replay from checkpoint |
+| `omium tui` | Launch Terminal UI |
+
+---
 
 ## Installation
 
-The CLI is installed as part of the Omium Python SDK:
+<Tip>
+The CLI is automatically installed with the SDK.
+</Tip>
 
 ```bash
 pip install omium
+omium --version  # Verify installation
 ```
 
-## Initialization
+---
 
-Before using most commands, you need to initialize your environment with your API key:
-
-```bash
-omium init
-```
-This will prompt you for your API key and API URL, saving them to `~/.omium/config.json`.
-
-## Available Commands
+## Configuration Commands
 
 ### `omium init`
 
-Initializes your Omium environment.
+Initialize Omium SDK configuration. This is the first command to run.
 
 ```bash
 omium init
 ```
 
-### `omium init-workflow`
-
-Creates a new workflow template.
-
-**Usage:**
-```bash
-omium init-workflow --type <framework> --name <workflow_name> [--output <file.json>]
-```
+**Options:**
+- `--api-key TEXT` - API key (recommended for Windows/PowerShell)
+- `--api-url TEXT` - API URL (default: https://api.omium.ai)
+- `--skip-verify` - Skip API key verification
 
 **Example:**
 ```bash
-omium init-workflow --type crewai --name my-first-crew --output my_crew_workflow.json
-```
+# Interactive mode
+omium init
 
-### `omium run`
-
-Runs a workflow from a JSON definition file.
-
-**Usage:**
-```bash
-omium run <workflow_file.json> [--input <input_data.json>]
-```
-
-**Example:**
-```bash
-omium run my_crew_workflow.json --input '{"topic": "AI in healthcare"}'
-```
-
-### `omium list`
-
-Lists all workflow executions.
-
-**Usage:**
-```bash
-omium list [--workflow-id <id>] [--status <status>] [--limit <num>] [--offset <num>]
-```
-
-**Example:**
-```bash
-omium list --status running --limit 10
-```
-
-### `omium show`
-
-Shows details of a specific workflow execution.
-
-**Usage:**
-```bash
-omium show <execution_id>
-```
-
-**Example:**
-```bash
-omium show exec_abc123
-```
-
-### `omium replay`
-
-Replays a workflow execution from a specific checkpoint.
-
-**Usage:**
-```bash
-omium replay <execution_id> [--checkpoint-id <id>]
-```
-
-**Example:**
-```bash
-omium replay exec_abc123 --checkpoint-id chk_def456
-```
-
-### `omium rollback`
-
-Rolls back a workflow execution to a specific checkpoint.
-
-**Usage:**
-```bash
-omium rollback <execution_id> <checkpoint_id>
-```
-
-**Example:**
-```bash
-omium rollback exec_abc123 chk_def456
+# Non-interactive (Windows recommended)
+omium init --api-key om_xxxxx
 ```
 
 ### `omium configure`
 
-Configures Omium settings interactively.
+Update existing configuration.
 
-**Usage:**
 ```bash
-omium configure --interactive
+omium configure [OPTIONS]
 ```
 
-### `omium export-crew`
+**Options:**
+- `--api-key TEXT` - New API key
+- `--api-url TEXT` - API URL
+- `--region TEXT` - Region (us-east-1, eu-west-1)
+- `--interactive / --no-interactive` - Interactive prompts
 
-Exports a CrewAI workflow instance to an Omium-compatible JSON format.
+---
 
-**Usage:**
+## Workflow Commands
+
+### `omium run`
+
+Run a Python script or workflow with Omium instrumentation.
+
 ```bash
-omium export-crew <path_to_file>:<instance_name> -o <output_file.json>
+omium run <script.py|workflow.json> [OPTIONS]
+```
+
+**Options:**
+- `--project TEXT` - Project name
+- `--env KEY=VALUE` - Environment variables (can repeat)
+- `--no-trace` - Disable automatic tracing
+- `--execution-id TEXT` - Custom execution ID
+
+**Examples:**
+```bash
+# Run Python script with auto-instrumentation
+omium run my_agent.py
+
+# Run with environment variables
+omium run my_agent.py --env OPENAI_API_KEY=sk-xxx --env DEBUG=true
+
+# Run workflow JSON (legacy)
+omium run workflow.json
+```
+
+### `omium init-workflow`
+
+Create a workflow template file.
+
+```bash
+omium init-workflow --type <TYPE> --name <NAME>
+```
+
+**Options:**
+- `--type TEXT` - Workflow type: `crewai`, `langgraph`, `basic`
+- `--name TEXT` - Workflow name
+- `--output TEXT` - Output file path
+
+**Example:**
+```bash
+omium init-workflow --type langgraph --name my-agent
+```
+
+---
+
+## Execution Commands
+
+### `omium list`
+
+List recent executions.
+
+```bash
+omium list [OPTIONS]
+```
+
+**Options:**
+- `--status TEXT` - Filter by status (running, completed, failed)
+- `--workflow-id TEXT` - Filter by workflow
+- `--limit INT` - Number of results (default: 20)
+
+**Example:**
+```bash
+omium list
+omium list --status failed --limit 10
+```
+
+### `omium show`
+
+Show detailed information about an execution.
+
+```bash
+omium show <EXECUTION_ID>
 ```
 
 **Example:**
 ```bash
-omium export-crew my_crew_module.py:my_crew_instance -o exported_crew.json
+omium show exec-abc123
 ```
 
-### `omium export-langgraph`
+### `omium logs`
 
-Exports a LangGraph compiled graph to an Omium-compatible JSON format.
+Stream logs from a running execution.
 
-**Usage:**
 ```bash
-omium export-langgraph <path_to_file>:<instance_name> -o <output_file.json>
+omium logs <EXECUTION_ID> [OPTIONS]
 ```
+
+**Options:**
+- `--follow / --no-follow` - Stream live logs (default: follow)
+- `-n, --tail INT` - Number of recent logs to show
+
+**Examples:**
+```bash
+omium logs exec-123           # Stream live
+omium logs exec-123 --no-follow  # Show last logs and exit
+omium logs exec-123 -n 100    # Show last 100 logs
+```
+
+### `omium replay`
+
+Replay an execution from a checkpoint.
+
+```bash
+omium replay <EXECUTION_ID> [OPTIONS]
+```
+
+**Options:**
+- `--checkpoint-id TEXT` - Specific checkpoint to replay from
 
 **Example:**
 ```bash
-omium export-langgraph my_graph_module.py:compiled_graph -o exported_graph.json
+omium replay exec-abc123
+omium replay exec-abc123 --checkpoint-id cp-456
 ```
+
+---
+
+## Project Commands
+
+### `omium push`
+
+Push local workflow/project to Omium cloud.
+
+```bash
+omium push [OPTIONS]
+```
+
+**Options:**
+- `--project TEXT` - Project directory
+- `--name TEXT` - Workflow name
+
+---
+
+## TUI Mode
+
+### `omium tui`
+
+Launch the interactive Terminal UI for browsing executions.
+
+```bash
+omium tui
+```
+
+---
+
+## Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `OMIUM_API_KEY` | API key (overrides config file) |
+| `OMIUM_API_URL` | API URL |
+| `OMIUM_DEBUG` | Enable debug logging |
+
+---
+
+## Configuration File
+
+Config is stored at `~/.omium/config.json`:
+
+```json
+{
+  "api_key": "om_xxx",
+  "api_url": "https://api.omium.ai/api/v1",
+  "region": "us-east-1",
+  "default_project": null
+}
+```
+
+---
 
 ## Next Steps
 
-Learn more about the [Omium Python SDK](/sdk-cli/python-sdk) or explore [Framework Integrations](/guides/crewai-integration).
-
+<CardGroup cols={2}>
+  <Card title="Python SDK" icon="code" href="/sdk-cli/python-sdk">
+    Full SDK API reference
+  </Card>
+  <Card title="Quick Start" icon="rocket" href="/getting-started/quickstart">
+    Get started with Omium
+  </Card>
+</CardGroup>
