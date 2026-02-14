@@ -39,7 +39,7 @@ Verify installation with `omium --version`
     ```python
     import omium
     
-    omium.init(api_key="om_xxx")
+    omium.init(api_key="omium_xxx")
     ```
   </Tab>
 </Tabs>
@@ -51,7 +51,7 @@ Verify installation with `omium --version`
     ```python
     import omium
     
-    omium.init(api_key="om_xxx")
+    omium.init(api_key="omium_xxx")
     omium.instrument_langgraph()
     
     # Your LangGraph code works unchanged
@@ -66,7 +66,7 @@ Verify installation with `omium --version`
     ```python
     import omium
     
-    omium.init(api_key="om_xxx")
+    omium.init(api_key="omium_xxx")
     omium.instrument_crewai()
     
     # Your CrewAI code works unchanged
@@ -80,7 +80,7 @@ Verify installation with `omium --version`
     ```python
     import omium
     
-    omium.init(api_key="om_xxx")
+    omium.init(api_key="omium_xxx")
     
     @omium.trace("process_data")
     def process_data(data):

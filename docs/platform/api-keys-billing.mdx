@@ -1,0 +1,31 @@
+---
+title: API keys and billing
+description: Get API keys and view usage
+---
+
+## API keys
+
+API keys authenticate the CLI and SDK with the Omium platform.
+
+### Get an API key
+
+1. Open [app.omium.ai](https://app.omium.ai) and sign in.
+2. Go to **API Keys** (or **Settings → API Keys**).
+3. Create a new key and copy it. Keys start with `omium_`.
+4. Use it once to configure the CLI: `omium init --api-key omium_xxx --api-url https://api.omium.ai`, or set the `OMIUM_API_KEY` environment variable.
+
+### Use in CLI and SDK
+
+- **CLI:** After `omium init`, the key is saved in `~/.omium/config.json`. You can also set `OMIUM_API_KEY` and `OMIUM_API_URL` in the environment.
+- **SDK:** Pass the key to `omium.init(api_key="omium_xxx")` or set `OMIUM_API_KEY`.
+
+---
+
+## Billing and usage
+
+- **View balance and usage** in the app (billing or usage section), or from the CLI:
+  - `omium billing balance` — Credits and USD
+  - `omium billing usage` — Usage statistics
+- **Cost** is shown per run and in total on the [Automations dashboard](/platform/automations).
+
+For pricing and plans, see the app or contact the Omium team.

@@ -26,7 +26,7 @@ The simplest way to use Omium. One-time setup, then your existing code works unc
 import omium
 
 # Option 1: With API key directly
-omium.init(api_key="om_xxx")
+omium.init(api_key="omium_xxx")
 
 # Option 2: Load from config file (~/.omium/config.json)
 omium.init()  # Uses saved config from 'omium init' CLI
@@ -54,7 +54,7 @@ result = app.invoke({"input": "Hello"})
 ```python
 import omium
 
-omium.init(api_key="om_xxx")
+omium.init(api_key="omium_xxx")
 omium.instrument_crewai()  # Enables auto-tracing
 
 from crewai import Crew, Agent, Task
@@ -93,7 +93,7 @@ async def analyze_result(data: dict):
 ```python
 import omium
 
-omium.init(api_key="om_xxx")
+omium.init(api_key="omium_xxx")
 
 @omium.checkpoint("important_step")
 def important_step(data: dict):
@@ -191,8 +191,8 @@ The CLI stores config in `~/.omium/config.json`:
 
 ```json
 {
-  "api_key": "om_xxx",
-  "api_url": "https://api.omium.ai/api/v1",
+  "api_key": "omium_xxx",
+  "api_url": "https://api.omium.ai",
   "region": "us-east-1"
 }
 ```

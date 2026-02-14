@@ -53,7 +53,7 @@ omium init
 omium init
 
 # Non-interactive (Windows recommended)
-omium init --api-key om_xxxxx
+omium init --api-key omium_xxxxx --api-url https://api.omium.ai
 ```
 
 ### `omium configure`
@@ -190,21 +190,112 @@ omium replay exec-abc123
 omium replay exec-abc123 --checkpoint-id cp-456
 ```
 
+### `omium status <execution_id>`
+
+Watch execution status until it completes.
+
+### `omium traces projects` / `omium traces list` / `omium traces show <trace_id>`
+
+List projects with traces, list traces (optionally by `--project`), or show one trace.
+
+```bash
+omium traces projects
+omium traces list --project my-agent
+omium traces show <trace-id>
+```
+
+### `omium failures list` / `omium failures show <execution_id>`
+
+List failed runs or show failure details for an execution.
+
+### `omium checkpoints list <execution_id>`
+
+List checkpoints for an execution (uses local checkpoint manager by default).
+
+### `omium rollback <execution_id> <checkpoint_id>`
+
+Rollback an execution to a checkpoint.
+
+---
+
+## Billing and analytics
+
+### `omium billing balance`
+
+Show credit balance and USD usage.
+
+### `omium billing usage [--limit N]`
+
+Show usage statistics.
+
+### `omium analytics summary`
+
+Show runs, success rate, and related metrics.
+
+### `omium analytics latency [--project NAME]` / `omium analytics errors [--project NAME]`
+
+Show latency or error analytics.
+
+---
+
+## Scores (evaluation)
+
+### `omium scores create`
+
+Create a score for a trace (interactive or with options).
+
+### `omium scores list [--trace-id] [--name] [--limit]`
+
+List scores, optionally filtered by trace or name.
+
+---
+
+## Export and templates
+
+### `omium export-crew <source>` / `omium export-langgraph <source>`
+
+Export a CrewAI or LangGraph workflow from a Python file or module.
+
+### `omium new [template] [name]`
+
+Create a new workflow from a template.
+
 ---
 
 ## Project Commands
 
-### `omium push`
+### `omium project init`
 
-Push local workflow/project to Omium cloud.
+Create an `omium.toml` and workflows directory in the current (or specified) directory.
 
 ```bash
-omium push [OPTIONS]
+omium project init [OPTIONS]
 ```
 
 **Options:**
-- `--project TEXT` - Project directory
-- `--name TEXT` - Workflow name
+- `--name TEXT` - Project name
+- `--dir TEXT` - Project directory (default: current)
+
+### `omium project push`
+
+Push local project and workflows to Omium cloud. Makes the project visible on the [Automations dashboard](https://app.omium.ai/automations).
+
+```bash
+omium project push [OPTIONS]
+```
+
+**Options:**
+- `--create` - Create project on cloud if it does not exist
+
+**Example:**
+```bash
+omium project init --name my-agent
+omium project push
+```
+
+### `omium project info` / `omium project workflows`
+
+Show project info or list workflows from `omium.toml`.
 
 ---
 
@@ -214,8 +305,16 @@ omium push [OPTIONS]
 
 Launch the interactive Terminal UI for browsing executions.
 
+### `omium chat`
+
+Start an interactive chat session (e.g. for building workflows).
+
+### `omium completions <shell>`
+
+Print shell completion script. Shells: `bash`, `zsh`, `fish`, `powershell`.
+
 ```bash
-omium tui
+omium completions powershell
 ```
 
 ---
@@ -236,12 +335,15 @@ Config is stored at `~/.omium/config.json`:
 
 ```json
 {
-  "api_key": "om_xxx",
-  "api_url": "https://api.omium.ai/api/v1",
-  "region": "us-east-1",
-  "default_project": null
+  "api_key": "omium_xxx",
+  "api_url": "https://api.omium.ai",
+  "region": "us-east-1"
 }
 ```
+
+<Tip>
+Do not add `/api/v1` to `api_url`; the CLI appends it when needed.
+</Tip>
 
 ---
 

@@ -1,0 +1,68 @@
+---
+title: First project and push
+description: Create a project and push it to the Automations dashboard
+---
+
+Create a project with `omium.toml` and push it to the platform so it appears on the [Automations dashboard](https://app.omium.ai/automations).
+
+---
+
+## 1. Create a project
+
+From your project directory (or an empty folder):
+
+```bash
+omium project init
+```
+
+Or with a name:
+
+```bash
+omium project init --name my-agent
+```
+
+This creates an `omium.toml` file and a `workflows/` directory.
+
+---
+
+## 2. Edit omium.toml (optional)
+
+Open `omium.toml` and set at least:
+
+- `[project]` — `name` and `version`
+- `[execution]` — `api_url` (default is `https://api.omium.ai/api/v1`)
+
+See [Configuration: omium.toml](/configuration/omium-toml) for the full reference.
+
+---
+
+## 3. Push the project
+
+```bash
+omium project push
+```
+
+The CLI syncs your project and workflows to the Omium API. If the project has no workflow definitions, a default workflow is created so the project still appears on the dashboard.
+
+---
+
+## 4. View on the Automations dashboard
+
+1. Open [app.omium.ai/automations](https://app.omium.ai/automations).
+2. You should see a card for your project.
+3. From there you can see runs, success rate, and cost.
+
+---
+
+## Troubleshooting
+
+- **502 or connection errors:** Set the correct API URL: `omium configure --api-url https://api.omium.ai`
+- **Project not visible:** Ensure `omium project push` completed successfully.
+
+---
+
+## Next steps
+
+- [CLI Commands](/sdk-cli/cli-commands) — All commands and options
+- [Configuration: omium.toml](/configuration/omium-toml) — Full reference
+- [Platform: Automations](/platform/automations) — Dashboard overview

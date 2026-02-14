@@ -1,0 +1,60 @@
+---
+title: Environment and config file
+description: Global CLI and SDK configuration
+---
+
+The CLI and SDK use **global** configuration for API key and API URL. This is separate from project-level [omium.toml](/configuration/omium-toml).
+
+---
+
+## Config file: `~/.omium/config.json`
+
+After you run `omium init` or `omium configure`, settings are stored in:
+
+- **Linux/macOS:** `~/.omium/config.json`
+- **Windows:** `%USERPROFILE%\.omium\config.json`
+
+| Field | Description |
+|-------|-------------|
+| `api_key` | Your Omium API key (starts with `omium_`) |
+| `api_url` | Omium API base URL (e.g. `https://api.omium.ai`). Do not include `/api/v1`. |
+| `region` | AWS region (e.g. `us-east-1`) |
+
+---
+
+## Environment variables
+
+You can override the config file with environment variables (useful in CI):
+
+| Variable | Description |
+|----------|-------------|
+| `OMIUM_API_KEY` | API key |
+| `OMIUM_API_URL` | API base URL (e.g. `https://api.omium.ai`) |
+
+**Example (Linux/macOS):**
+
+```bash
+export OMIUM_API_KEY=omium_xxxxxxxxxxxx
+export OMIUM_API_URL=https://api.omium.ai
+omium project push
+```
+
+**Example (PowerShell):**
+
+```powershell
+$env:OMIUM_API_KEY = "omium_xxxxxxxxxxxx"
+$env:OMIUM_API_URL = "https://api.omium.ai"
+omium project push
+```
+
+Environment variables take precedence over the config file.
+
+---
+
+## Production API URL
+
+For the hosted Omium platform use:
+
+- **API URL:** `https://api.omium.ai` (no trailing slash, no `/api/v1`)
+
+The CLI and SDK append `/api/v1` where needed.

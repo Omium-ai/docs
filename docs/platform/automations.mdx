@@ -1,0 +1,33 @@
+---
+title: Automations dashboard
+description: Projects, workflows, runs, and cost
+---
+
+The **Automations** page at [app.omium.ai/automations](https://app.omium.ai/automations) shows your projects and workflows, run history, success rate, and cost.
+
+---
+
+## What you see
+
+- **Project cards** — One card per project (or workflow). Each shows name, status (e.g. Healthy, Idle, Failed), total runs, success rate, cost, and last run time.
+- **Summary metrics** — Total automations, healthy count, live runs, total cost.
+
+---
+
+## How projects appear
+
+Projects appear when you **push** them from your machine:
+
+1. Create a project: `omium project init` and add an `omium.toml` (see [First project and push](/getting-started/first-project)).
+2. Run `omium project push`.
+3. The CLI syncs your project and workflows to the Omium API. If there are no workflow definitions, a default workflow is still created so the project shows as one card.
+4. Refresh the Automations page; your project card should appear.
+
+If a project does not appear, check that `omium project push` completed without errors and that you use the same account as the API key.
+
+---
+
+## See also
+
+- [API keys and billing](/platform/api-keys-billing) — Get API keys and view usage
+- [First project and push](/getting-started/first-project) — Push a project from the CLI

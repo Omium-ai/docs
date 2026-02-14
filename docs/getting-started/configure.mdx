@@ -1,0 +1,69 @@
+---
+title: Get API key and configure
+description: Get your API key and configure the CLI
+---
+
+## 1. Get your API key
+
+1. Open [app.omium.ai](https://app.omium.ai) and sign in.
+2. Go to **API Keys** (or **Settings → API Keys**).
+3. Create a new API key and copy it. It will look like `omium_xxxxxxxxxxxx`.
+
+Keep the key secret. You use it once to configure the CLI (stored in `~/.omium/config.json`).
+
+---
+
+## 2. Configure the CLI
+
+Run the init command. It verifies your key and saves the configuration.
+
+### Interactive (Linux/macOS)
+
+```bash
+omium init
+```
+
+You will be prompted for your API key and API URL.
+
+### Non-interactive (recommended on Windows/PowerShell)
+
+On Windows, pasting in the terminal can be unreliable. Use flags instead:
+
+```powershell
+omium init --api-key omium_xxxxxxxxxxxx --api-url https://api.omium.ai
+```
+
+Replace `omium_xxxxxxxxxxxx` with your actual API key.
+
+<Tip>
+**API URL:** Use `https://api.omium.ai` for the hosted platform. Do not add `/api/v1`; the CLI adds it automatically.
+</Tip>
+
+### Skip verification (not recommended)
+
+```bash
+omium init --api-key omium_xxx --api-url https://api.omium.ai --skip-verify
+```
+
+---
+
+## 3. Where configuration is stored
+
+- **File:** `~/.omium/config.json`
+- **Environment overrides:** You can set `OMIUM_API_KEY` and `OMIUM_API_URL` instead of using the file.
+
+---
+
+## 4. Change settings later
+
+```bash
+omium configure --api-key omium_newkey --api-url https://api.omium.ai
+```
+
+Or run `omium configure -i` for interactive prompts.
+
+---
+
+## Next step
+
+Run your first script or workflow: [Quick Start](/getting-started/quickstart) or run `omium run your_script.py`.

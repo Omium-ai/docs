@@ -36,7 +36,9 @@
       "pages": [
         "intro",
         "getting-started/installation",
-        "getting-started/quickstart"
+        "getting-started/configure",
+        "getting-started/quickstart",
+        "getting-started/first-project"
       ]
     },
     {
@@ -51,6 +53,20 @@
       "pages": [
         "sdk-cli/python-sdk",
         "sdk-cli/cli-commands"
+      ]
+    },
+    {
+      "group": "Configuration",
+      "pages": [
+        "configuration/omium-toml",
+        "configuration/environment"
+      ]
+    },
+    {
+      "group": "Platform",
+      "pages": [
+        "platform/automations",
+        "platform/api-keys-billing"
       ]
     },
     {

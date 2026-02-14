@@ -1,0 +1,106 @@
+---
+title: omium.toml reference
+description: Project-level configuration file
+---
+
+`omium.toml` is the project-level configuration file. It lives in your project root and is used by `omium project push`, `omium run`, and the SDK when running in the project directory.
+
+---
+
+## Location
+
+Place `omium.toml` in the root of your project. Create it with:
+
+```bash
+omium project init
+```
+
+---
+
+## Sections
+
+### `[project]`
+
+| Key | Description | Example |
+|-----|-------------|---------|
+| `name` | Project name (shown on Automations dashboard) | `"my-agent"` |
+| `version` | Project version | `"0.1.0"` |
+
+### `[execution]`
+
+| Key | Description | Default |
+|-----|-------------|---------|
+| `api_url` | Execution/trace API base URL | `"https://api.omium.ai/api/v1"` |
+
+### `[tracing]`
+
+| Key | Description | Default |
+|-----|-------------|---------|
+| `enabled` | Enable automatic tracing | `true` |
+
+### `[llm]`
+
+| Key | Description | Example |
+|-----|-------------|---------|
+| `provider` | LLM provider | `"router"`, `"openai"` |
+| `model` | Default model | `"llama3.3-70b-instruct"` |
+
+### `[workflows]`
+
+| Key | Description | Default |
+|-----|-------------|---------|
+| `directory` | Directory for workflow JSON files | `"./workflows"` |
+
+### `[checkpoints]`
+
+| Key | Description | Default |
+|-----|-------------|---------|
+| `enabled` | Enable checkpointing | `true` |
+| `interval` | Auto-checkpoint interval (seconds) | `30` |
+| `max_count` | Maximum checkpoints to keep | `100` |
+
+### `[logging]`
+
+| Key | Description | Default |
+|-----|-------------|---------|
+| `level` | Log level | `"info"` |
+| `rich_output` | Rich terminal formatting | `true` |
+
+---
+
+## Example
+
+```toml
+[project]
+name = "my-agent"
+version = "0.1.0"
+
+[execution]
+api_url = "https://api.omium.ai/api/v1"
+
+[tracing]
+enabled = true
+
+[llm]
+provider = "router"
+model = "llama3.3-70b-instruct"
+
+[workflows]
+directory = "./workflows"
+
+[checkpoints]
+enabled = true
+interval = 30
+max_count = 100
+
+[logging]
+level = "info"
+rich_output = true
+```
+
+---
+
+## See also
+
+- [Environment and config file](/configuration/environment) — Global CLI config
+- [First project and push](/getting-started/first-project) — Create and push a project
